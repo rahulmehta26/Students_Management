@@ -19,12 +19,12 @@ const StudentTable = ({ students, onEdit, onDelete }) => {
         <tbody className="text-gray-600 text-sm font-light">
           {students.map((student) => (
             <tr key={student.id} className="border-b border-gray-200 hover:bg-gray-100">
-              <td className="py-3 px-6 text-left whitespace-nowrap">{student.id}</td>
-              <td className="py-3 px-6 text-left">{student.name}</td>
-              <td className="py-3 px-6 text-left">{student.class}</td>
-              <td className="py-3 px-6 text-left">{student.section}</td>
-              <td className="py-3 px-6 text-left">{student.rollNumber}</td>
-              <td className="py-3 px-6 text-center">
+              <td className="py-3 px-6 font-medium text-left whitespace-nowrap">{student.id}</td>
+              <td className="py-3 px-6 font-medium text-left">{student.name}</td>
+              <td className="py-3 px-6 font-medium text-left">{student.class}</td>
+              <td className="py-3 px-6 font-medium text-left">{student.section}</td>
+              <td className="py-3 px-6 font-medium text-left">{student.rollNumber}</td>
+              <td className="py-3 px-6 font-medium text-center">
                 <div className="flex item-center justify-center">
                   <button className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
                     <FaEye />
