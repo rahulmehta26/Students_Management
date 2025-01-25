@@ -12,16 +12,46 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false,
+  });
   const navigate = useNavigate();
+
+  const validateEmail = (email) => {
+    if (!email.trim()) return "Email is required";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) ? "" : "Invalid email format";
+  };
+
+  const validatePassword = (password) => {
+    if (!password.trim()) return "Password is required";
+    return password.length < 6 ? "Password must be at least 6 characters" : "";
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    setTouched({ email: true, password: true });
+
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    if (emailError || passwordError) {
+      setError(emailError || passwordError);
+      return;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/dashboard");
     } catch (error) {
       setError("Invalid email or password");
     }
+  };
+
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
   return (
@@ -34,10 +64,16 @@ const Login = () => {
             Sign in to your account
           </h2>
         </div>
-        <form className="mt-8 space-y-6 " onSubmit={handleLogin}>
+        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md font-medium space-y-4">
-            <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+            <div
+              className={`flex items-center border rounded-md overflow-hidden ${
+                touched.email && validateEmail(email)
+                  ? "border-red-500"
+                  : "border-gray-300"
+              }`}
+            >
               <div className="bg-gray-100 p-3 border-r border-gray-300">
                 <IoMail className="text-gray-500" size={20} />
               </div>
@@ -46,14 +82,26 @@ const Login = () => {
                 name="email"
                 type="email"
                 autoComplete="email"
-                required
                 className="flex-grow px-3 py-2 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => handleBlur("email")}
               />
             </div>
-            <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+            {touched.email && validateEmail(email) && (
+              <p className="text-red-500 text-xs mt-1">
+                {validateEmail(email)}
+              </p>
+            )}
+
+            <div
+              className={`flex items-center border rounded-md overflow-hidden ${
+                touched.password && validatePassword(password)
+                  ? "border-red-500"
+                  : "border-gray-300"
+              }`}
+            >
               <div className="bg-gray-100 p-3 border-r border-gray-300">
                 <FaLock className="text-gray-500" size={20} />
               </div>
@@ -62,11 +110,11 @@ const Login = () => {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
-                required
                 className="flex-grow px-3 py-2 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onBlur={() => handleBlur("password")}
               />
               <div
                 className="bg-transparent p-3 cursor-pointer"
@@ -79,6 +127,11 @@ const Login = () => {
                 )}
               </div>
             </div>
+            {touched.password && validatePassword(password) && (
+              <p className="text-red-500 text-xs mt-1">
+                {validatePassword(password)}
+              </p>
+            )}
           </div>
 
           {error && (
